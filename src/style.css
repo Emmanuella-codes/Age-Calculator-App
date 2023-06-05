@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,700;1,800&display=swap');
 
 :root {
   --font-family: Poppins;
@@ -7,10 +7,76 @@
   --result-font-weight: 800;
   --primary-color: hsl(259, 100%, 65%);
   --light-color: hsl(0, 100%, 67%);
-  --neutral-white: hsl(0, 19%, 42%);
+  --neutral-white: hsl(0, 0%, 100%);
   --neutral-offwhite: hsl(0, 0%, 94%);
   --neutral-light-grey: hsl(0, 0%, 86%);
   --neutral-smokey-grey: hsl(0, 1%, 44%);
   --neutral-offblack: hsl(0, 0%, 8%);
   color-scheme: light dark;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--neutral-offwhite);
+  font-family: Poppins;
+  margin: auto;
+}
+
+.card {
+  background-color: var(--neutral-white);
+  padding: 35px 40px 15px;
+  width: 40%;
+  position: absolute;
+  top: 20%;
+  left: 30%;
+  border-top-right-radius: 15px;
+  border-top-left-radius: 15px;
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 180px;
+}
+
+.result span {
+  color: hsl(259, 100%, 65%);
+  font-size: 3rem;
+  font-weight: 800;
+  font-style: italic;
+}
+.result h2 {
+  font-size: 3rem;
+  font-weight: 800;
+  font-style: italic;
+}
+
+.attribution {
+  font-size: 11px;
+  text-align: center;
+}
+.attribution a {
+  color: hsl(228, 45%, 44%);
+}
+
+@media only screen and (max-width: 768px) {
+  .card {
+    width: 80%;
+    padding: 20px 35px 20px;
+    margin: auto;
+    border-bottom-right-radius: 95px;
+    top: 20%;
+    left: 9%;
+  }
+
+  .result span {
+    font-size: 2rem;
+    font-style: italic;
+  }
+
+  .result h2 {
+    font-size: 2rem;
+    font-style: italic;
+  }
 }
