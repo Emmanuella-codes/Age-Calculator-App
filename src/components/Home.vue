@@ -19,25 +19,75 @@ const fields = [
   },
 ];
 
+const ageInYears = ref(null);
+const ageInMonths = ref(null);
+const ageInDays = ref(null);
+const errorMessage = ref('');
+
 const calculateAge = () => {
-  const birthDay = fields[0].value;
-  const birthMonth = fields[1].value;
-  const birthYear = fields[2].value;
+  const birthDay = parseInt(fields[0].value);
+  const birthMonth = parseInt(fields[1].value);
+  const birthYear = parseInt(fields[2].value);
 
   const currentDate = new Date();
   const currentDay = currentDate.getDate();
   const currentMonth = currentDate.getMonth() + 1;
   const currentYear = currentDate.getFullYear();
 
+  if (!birthDay || !birthMonth || !birthYear) {
+    errorMessage.value = 'Please enter a valid date.';
+    return;
+  }
+
+  if (birthDay < 1 || birthDay > 31 || birthMonth < 1 || birthMonth > 12) {
+    errorMessage.value = 'Please enter a valid day and month.';
+    return;
+  }
+
+  if (
+    birthYear > currentYear ||
+    (birthYear === currentYear && birthMonth > currentMonth) ||
+    (birthYear === currentYear &&
+      birthMonth === currentMonth &&
+      birthDay > currentDay)
+  ) {
+    errorMessage.value = 'Please enter a valid date in the past.';
+    return;
+  }
+
   const ageInMilliseconds =
     currentDate - new Date(birthYear, birthMonth - 1, birthDay);
-  const ageInDays = Math.floor(ageInMilliseconds / (1000 * 60 * 60 * 24));
-  const ageInYears = Math.floor(ageInDays / 365);
-  const ageInMonths = Math.floor((ageInDays % 365) / 30);
+  const ageInDaysValue = Math.floor(ageInMilliseconds / (1000 * 60 * 60 * 24));
+  const ageInYearsValue = Math.floor(ageInDaysValue / 365);
+  const ageInMonthsValue = Math.floor((ageInDaysValue % 365) / 30);
 
-  console.log('Age in days:', ageInDays);
-  console.log('Age in years:', ageInYears);
-  console.log('Age in months:', ageInMonths);
+  animateNumber(ageInYears, ageInYearsValue);
+  animateNumber(ageInMonths, ageInMonthsValue);
+  animateNumber(ageInDays, ageInDaysValue);
+
+  errorMessage.value = '';
+};
+
+const animateNumber = (refValue, targetValue) => {
+  if (refValue.value === null) {
+    refValue.value = targetValue;
+    return;
+  }
+
+  const currentValue = refValue.value;
+  const increment = targetValue > currentValue ? 1 : -1;
+
+  const interval = setInterval(() => {
+    refValue.value += increment;
+
+    if (
+      (increment > 0 && refValue.value >= targetValue) ||
+      (increment < 0 && refValue.value <= targetValue)
+    ) {
+      clearInterval(interval);
+      refValue.value = targetValue;
+    }
+  }, 20);
 };
 </script>
 
@@ -82,6 +132,7 @@ const calculateAge = () => {
               :type="field.type"
               :id="field.name"
               :placeholder="field.placeholder"
+              v-model="field.value"
             />
           </div>
         </div>
@@ -96,23 +147,11 @@ const calculateAge = () => {
     </div>
     <!--Result section-->
     <div class="result flex mb-6 align-center">
-      <div v-if="currentMonth > birthMonth">
-        <h4>You will be</h4>
-        <h2>
-          <span>{{ ageInYears }}</span
-          >years
-        </h2>
-        <h2>
-          <span>{{ ageInMonths }}</span
-          >months
-        </h2>
-        <h2>
-          <span>{{ ageInDays }}</span
-          >day(s)
-        </h2>
+      <div v-if="errorMessage !== ''">
+        <p>{{ errorMessage }}</p>
       </div>
-      <div v-else-if="currentMonth < birthMonth">
-        <h4>You are</h4>
+      <div v-else-if="ageInYears !== null">
+        <h4>You {{ currentMonth > birthMonth ? 'will be' : 'are' }}</h4>
         <h2>
           <span>{{ ageInYears }}</span
           >years
