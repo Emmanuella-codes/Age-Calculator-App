@@ -1,14 +1,35 @@
 <script setup>
 import { ref } from 'vue';
 
+const generateArr = (start, end) => {
+  let arr = [];
+  for (start; start <= end; start++) {
+    arr.push(start);
+  }
+  return arr;
+};
+
+const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+
+const days = generateArr(1, 31);
+const years = generateArr(1900, new Date().getFullYear());
+
 const fields = [
-  { name: 'day', label: 'DAY', type: 'number', value: '', placeholder: 'DD' },
+  {
+    name: 'day',
+    label: 'DAY',
+    type: 'number',
+    value: '',
+    placeholder: 'DD',
+    options: days,
+  },
   {
     name: 'month',
     label: 'MONTH',
     type: 'number',
     value: '',
     placeholder: 'MM',
+    options: months,
   },
   {
     name: 'year',
@@ -16,78 +37,37 @@ const fields = [
     type: 'number',
     value: '',
     placeholder: 'YYYY',
+    options: years,
   },
 ];
 
-const ageInYears = ref(null);
-const ageInMonths = ref(null);
-const ageInDays = ref(null);
-const errorMessage = ref('');
+const selectedDay = ref(null);
+const selectedMonth = ref(null);
+const selectedYear = ref(null);
+const age = ref('');
+console.log(selectedDay);
 
 const calculateAge = () => {
-  const birthDay = parseInt(fields[0].value);
-  const birthMonth = parseInt(fields[1].value);
-  const birthYear = parseInt(fields[2].value);
+  const day = parseInt(fields[0].value);
+  const month = parseInt(fields[1].value);
+  const year = parseInt(fields[2].value);
+  const birthday = `${month} ${day} ${year}`;
 
-  const currentDate = new Date();
-  const currentDay = currentDate.getDate();
-  const currentMonth = currentDate.getMonth() + 1;
-  const currentYear = currentDate.getFullYear();
+  let today = new Date(),
+    dob = new Date(birthday),
+    diff = today.getTime() - dob.getTime(),
+    years = Math.floor(diff / (1000 * 24 * 60 * 60 * 365.24)), // 1000*24*60*60*365.24 = calculate millisecond in a year
+    daysDiff = Math.floor((diff % (1000 * 24 * 60 * 60 * 365.24)) / 86400000), // 86400000 = millisecond in a day
+    months = Math.floor(daysDiff / 30.4167), // 30.4167 = days in a month
+    days = Math.floor(daysDiff % 30.4167);
 
-  if (!birthDay || !birthMonth || !birthYear) {
-    errorMessage.value = 'Please enter a valid date.';
-    return;
-  }
+  console.log(`${years} years, ${months} month(s), ${years} years.`);
 
-  if (birthDay < 1 || birthDay > 31 || birthMonth < 1 || birthMonth > 12) {
-    errorMessage.value = 'Please enter a valid day and month.';
-    return;
-  }
-
-  if (
-    birthYear > currentYear ||
-    (birthYear === currentYear && birthMonth > currentMonth) ||
-    (birthYear === currentYear &&
-      birthMonth === currentMonth &&
-      birthDay > currentDay)
-  ) {
-    errorMessage.value = 'Please enter a valid date in the past.';
-    return;
-  }
-
-  const ageInMilliseconds =
-    currentDate - new Date(birthYear, birthMonth - 1, birthDay);
-  const ageInDaysValue = Math.floor(ageInMilliseconds / (1000 * 60 * 60 * 24));
-  const ageInYearsValue = Math.floor(ageInDaysValue / 365);
-  const ageInMonthsValue = Math.floor((ageInDaysValue % 365) / 30);
-
-  animateNumber(ageInYears, ageInYearsValue);
-  animateNumber(ageInMonths, ageInMonthsValue);
-  animateNumber(ageInDays, ageInDaysValue);
-
-  errorMessage.value = '';
-};
-
-const animateNumber = (refValue, targetValue) => {
-  if (refValue.value === null) {
-    refValue.value = targetValue;
-    return;
-  }
-
-  const currentValue = refValue.value;
-  const increment = targetValue > currentValue ? 1 : -1;
-
-  const interval = setInterval(() => {
-    refValue.value += increment;
-
-    if (
-      (increment > 0 && refValue.value >= targetValue) ||
-      (increment < 0 && refValue.value <= targetValue)
-    ) {
-      clearInterval(interval);
-      refValue.value = targetValue;
-    }
-  }, 20);
+  age.value = {
+    years,
+    months,
+    days,
+  };
 };
 </script>
 
@@ -103,37 +83,34 @@ const animateNumber = (refValue, targetValue) => {
             class="w-full md:w-1/2 px-3 mb-6 md:mb-0"
           >
             <label
-              class="
-                block
-                uppercase
-                tracking-wide
-                text-gray-700 text-xs
-                font-bold
-                mb-2
-              "
+              class="block uppercase tracking-wide text-gray-700 text-xs mb-2"
               for="grid-first-name"
               :for="field.name"
             >
               {{ field.label }}
             </label>
-            <input
+            <select
               class="
                 appearance-none
                 block
-                w-full
+                w-20
                 rounded
                 py-3
                 px-4
                 mb-3
+                max-md:px-2 max-md:w-14
                 leading-tight
                 focus:outline-none focus:bg-white
               "
               id="grid-first-name"
-              :type="field.type"
               :id="field.name"
               :placeholder="field.placeholder"
               v-model="field.value"
-            />
+            >
+              <option v-for="item in field.options" :value="item" :key="item">
+                {{ item }}
+              </option>
+            </select>
           </div>
         </div>
         <button class="cta flex" type="submit">
@@ -147,21 +124,18 @@ const animateNumber = (refValue, targetValue) => {
     </div>
     <!--Result section-->
     <div class="result flex mb-6 align-center">
-      <div v-if="errorMessage !== ''">
-        <p>{{ errorMessage }}</p>
-      </div>
-      <div v-else-if="ageInYears !== null">
-        <h4>You {{ currentMonth > birthMonth ? 'will be' : 'are' }}</h4>
+      <div v-if="age">
+        <!-- <h4>You {{ currentMonth > birthMonth ? 'will be' : 'are' }}</h4> -->
         <h2>
-          <span>{{ ageInYears }}</span
+          <span>{{ age.years }}</span
           >years
         </h2>
         <h2>
-          <span>{{ ageInMonths }}</span
+          <span>{{ age.months }}</span
           >months
         </h2>
         <h2>
-          <span>{{ ageInDays }}</span
+          <span>{{ age.days }}</span
           >day(s)
         </h2>
       </div>
