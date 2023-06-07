@@ -101,6 +101,7 @@ const calculateAge = () => {
                 max-md:px-2
                 leading-tight
                 focus:outline-none focus:bg-white
+                font-bold
               "
               id="grid-first-name"
               :id="field.name"

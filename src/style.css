@@ -53,8 +53,11 @@ body {
 }
 
 .attribution {
+  position: absolute;
   font-size: 11px;
   text-align: center;
+  bottom: 0px;
+  left: 33%;
 }
 .attribution a {
   color: hsl(228, 45%, 44%);
@@ -78,5 +81,10 @@ body {
   .result h2 {
     font-size: 2rem;
     font-style: italic;
+  }
+
+  .attribution {
+    width: 67%;
+    left: 15%;
   }
 }
