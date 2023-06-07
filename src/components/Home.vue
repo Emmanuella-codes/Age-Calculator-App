@@ -93,12 +93,12 @@ const calculateAge = () => {
               class="
                 appearance-none
                 block
-                w-20
+                w-full
                 rounded
                 py-3
                 px-4
                 mb-3
-                max-md:px-2 max-md:w-14
+                max-md:px-2
                 leading-tight
                 focus:outline-none focus:bg-white
               "
