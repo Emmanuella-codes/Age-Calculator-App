@@ -63,7 +63,18 @@ body {
   color: hsl(228, 45%, 44%);
 }
 
-@media only screen and (max-width: 768px) {
+@media only screen and (max-width: 992px) {
+  .card {
+    width: 72%;
+    left: 12%;
+  }
+
+  .attribution {
+    left: 18%;
+  }
+}
+
+@media only screen and (max-width: 480px) {
   .card {
     width: 80%;
     padding: 20px 35px 20px;
