@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 
 const generateArr = (start, end) => {
   let arr = [];
@@ -45,7 +45,6 @@ const selectedDay = ref(null);
 const selectedMonth = ref(null);
 const selectedYear = ref(null);
 const age = ref('');
-console.log(selectedDay);
 
 const calculateAge = () => {
   const day = parseInt(fields[0].value);
@@ -69,6 +68,10 @@ const calculateAge = () => {
     days,
   };
 };
+
+const isFormIncomplete = computed(() => {
+  return !selectedDay.value || !selectedMonth.value || !selectedYear.value;
+});
 </script>
 
 <template>
@@ -107,6 +110,7 @@ const calculateAge = () => {
               :id="field.name"
               :placeholder="field.placeholder"
               v-model="field.value"
+              required
             >
               <option v-for="item in field.options" :value="item" :key="item">
                 {{ item }}
@@ -114,7 +118,7 @@ const calculateAge = () => {
             </select>
           </div>
         </div>
-        <button class="cta flex" type="submit">
+        <button class="cta flex" type="submit" :disabled="isFormIncomplete">
           <span>Check</span>
           <svg class="mt-2" viewBox="0 0 13 10" height="10px" width="15px">
             <path d="M1,5 L11,5"></path>
