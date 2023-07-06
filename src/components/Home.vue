@@ -14,7 +14,7 @@ const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 const days = generateArr(1, 31);
 const years = generateArr(1900, new Date().getFullYear());
 
-const fields = [
+const fields = ref([
   {
     name: 'day',
     label: 'DAY',
@@ -39,7 +39,7 @@ const fields = [
     placeholder: 'YYYY',
     options: years,
   },
-];
+]);
 
 const selectedDay = ref(null);
 const selectedMonth = ref(null);
@@ -47,9 +47,9 @@ const selectedYear = ref(null);
 const age = ref('');
 
 const calculateAge = () => {
-  const day = parseInt(fields[0].value);
-  const month = parseInt(fields[1].value);
-  const year = parseInt(fields[2].value);
+  const day = parseInt(fields.value[0].value);
+  const month = parseInt(fields.value[1].value);
+  const year = parseInt(fields.value[2].value);
   const birthday = `${month} ${day} ${year}`;
 
   let today = new Date(),
@@ -60,7 +60,7 @@ const calculateAge = () => {
     months = Math.floor(daysDiff / 30.4167), // 30.4167 = days in a month
     days = Math.floor(daysDiff % 30.4167);
 
-  console.log(`${years} years, ${months} month(s), ${years} years.`);
+  console.log(`${years} years, ${months} month(s), ${days} days.`);
 
   age.value = {
     years,
@@ -87,7 +87,6 @@ const isFormIncomplete = computed(() => {
           >
             <label
               class="block uppercase tracking-wide text-gray-700 text-xs mb-2"
-              for="grid-first-name"
               :for="field.name"
             >
               {{ field.label }}
@@ -106,7 +105,6 @@ const isFormIncomplete = computed(() => {
                 focus:outline-none focus:bg-white
                 font-bold
               "
-              id="grid-first-name"
               :id="field.name"
               :placeholder="field.placeholder"
               v-model="field.value"
@@ -118,7 +116,7 @@ const isFormIncomplete = computed(() => {
             </select>
           </div>
         </div>
-        <button class="cta flex" type="submit" :disabled="isFormIncomplete">
+        <button class="cta flex" type="submit">
           <span>Check</span>
           <svg class="mt-2" viewBox="0 0 13 10" height="10px" width="15px">
             <path d="M1,5 L11,5"></path>
@@ -132,16 +130,13 @@ const isFormIncomplete = computed(() => {
       <div v-if="age">
         <!-- <h4>You {{ currentMonth > birthMonth ? 'will be' : 'are' }}</h4> -->
         <h2>
-          <span>{{ age.years }}</span
-          >years
+          <span>{{ age.years }}</span> years
         </h2>
         <h2>
-          <span>{{ age.months }}</span
-          >months
+          <span>{{ age.months }}</span> months
         </h2>
         <h2>
-          <span>{{ age.days }}</span
-          >day(s)
+          <span>{{ age.days }}</span> day(s)
         </h2>
       </div>
       <div v-else>
